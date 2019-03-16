@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 
-import TrackerStore, { TrackerModel } from './stores/TrackerStore';
+import { TrackerModel } from '../stores/TrackerStore';
 
 const Box = styled.button`
   padding: 20px;

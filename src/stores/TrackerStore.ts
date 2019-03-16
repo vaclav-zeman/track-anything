@@ -1,5 +1,5 @@
 import { observable, action, autorun, toJS, ObservableMap } from 'mobx';
-import { IFormValues } from '../App';
+import { IFormValues } from '../features/AddForm';
 
 export type ITracker = {
   name: string;
