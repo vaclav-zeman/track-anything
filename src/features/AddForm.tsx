@@ -5,6 +5,7 @@ import { Formik, Field, FormikProps } from 'formik';
 import styled from 'styled-components';
 import TrackerStore, { TrackInterval } from '../stores/TrackerStore';
 import { colorArray } from '../enums';
+import { history } from '../App';
 
 export type IFormValues = {
   name: string;
@@ -19,35 +20,93 @@ const Container = styled.main`
   margin: 0 auto;
 `;
 
-const App = () => {
+const Input = styled.input`
+  background: white;
+  border-radius: 5px;
+  border: 2px solid #e2e2e2;
+  display: block;
+  font-size: 18px;
+  height: 50px;
+  margin: 0 0 20px;
+  padding: 0 10px;
+  width: 100%;
+`;
+
+const ColorBox = styled.label`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 0 5px 10px;
+  text-align: center;
+
+  input {
+    opacity: 0.3;
+  }
+`;
+
+const Color = (props: any) => (
+  <ColorBox style={{ backgroundColor: props.value }}>
+    <input {...props} type="radio" />
+  </ColorBox>
+);
+
+const Button = styled.button`
+  display: block;
+  width: 100%;
+  height: 70px;
+  background: #6a5db8;
+  font-size: 18px;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  margin: 20px 0;
+`;
+
+const AddForm = () => {
   return (
     <Container>
       <Formik
         initialValues={{ name: '', limit: 0, color: '', interval: TrackInterval.DAY }}
         onSubmit={(values, { resetForm }) => {
           TrackerStore.addTracker(values);
+          history.push('/');
           resetForm();
         }}
       >
-        {({ handleSubmit }: FormikProps<IFormValues>) => (
+        {({ handleSubmit, handleChange, values }: FormikProps<IFormValues>) => (
           <form onSubmit={handleSubmit}>
-            Add Tracker
-            <Field name="name" placeholder="name" type="text" />
-            <Field name="limit" placeholder="limit" type="number" />
-            <Field component="select" name="interval">
+            <h1>Add Tracker</h1>
+            <Input
+              name="name"
+              placeholder="Name (e.g. Yoga)"
+              type="text"
+              onChange={handleChange}
+              value={values.name}
+            />
+            <Input
+              name="limit"
+              placeholder="Target"
+              type="number"
+              onChange={handleChange}
+              value={values.limit}
+            />
+            <Input name="interval" onChange={handleChange} value={values.interval} as="select">
               <option value={TrackInterval.DAY}>Day</option>
               <option value={TrackInterval.WEEK}>Week</option>
               <option value={TrackInterval.MONTH}>Month</option>
               <option value={TrackInterval.NEVER}>Never</option>
-            </Field>
-            <Field component="select" name="color">
-              {colorArray.map(color => (
-                <option key={color} value={color}>
-                  {color}
-                </option>
-              ))}
-            </Field>
-            <button type="submit">Add</button>
+            </Input>
+            {colorArray.map(color => (
+              <Color
+                key={color}
+                onChange={handleChange}
+                name="color"
+                checked={color === values.color}
+                value={color}
+              />
+            ))}
+            <Button type="submit">Create Tracker</Button>
           </form>
         )}
       </Formik>
@@ -55,4 +114,4 @@ const App = () => {
   );
 };
 
-export default observer(App);
+export default observer(AddForm);

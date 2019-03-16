@@ -16,6 +16,9 @@ const Container = styled.main`
   width: 600px;
   padding: 20px;
   margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 `;
 
 const TrackerList = () => {
