@@ -3,17 +3,17 @@ import { IFormValues } from '../App';
 
 export type ITracker = {
   name: string;
-  totalCount: number;
+  limit: number;
   color: string;
   interval: TrackInterval;
   currentCount: number;
 };
 
 export enum TrackInterval {
-  DAY,
-  WEEK,
-  MONTH,
-  NEVER,
+  DAY = 'day',
+  WEEK = 'week',
+  MONTH = 'month',
+  NEVER = 'never',
 }
 
 export class TrackerModel {
@@ -24,7 +24,13 @@ export class TrackerModel {
   id = '';
   @observable currentCount = 0;
 
-  constructor(name: string, limit: number, color: string, interval: TrackInterval) {
+  constructor(
+    name: string,
+    limit: number,
+    color: string,
+    interval: TrackInterval,
+    currentCount?: number
+  ) {
     this.id =
       '_' +
       Math.random()
@@ -34,6 +40,10 @@ export class TrackerModel {
     this.limit = limit;
     this.color = color;
     this.interval = interval;
+
+    if (currentCount) {
+      this.currentCount = currentCount;
+    }
   }
 
   @action.bound
@@ -51,7 +61,16 @@ class TrackerStore {
     const cached = localStorage.getItem('trackers');
 
     if (cached) {
-      this.trackers = JSON.parse(cached);
+      this.trackers = JSON.parse(cached).map(
+        (tracker: ITracker) =>
+          new TrackerModel(
+            tracker.name,
+            tracker.limit,
+            tracker.color,
+            tracker.interval,
+            tracker.currentCount
+          )
+      );
     }
 
     autorun(() => localStorage.setItem('trackers', JSON.stringify(toJS(this.trackers))), {

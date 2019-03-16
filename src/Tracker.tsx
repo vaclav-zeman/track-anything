@@ -24,6 +24,8 @@ const Tracker = ({ model }: IProps) => {
     <Box onClick={model.increment} bgColor={model.color}>
       <span>{model.name}</span>
       <br />
+      <span>per {model.interval}</span>
+      <br />
       <strong>
         {model.currentCount} / {model.limit}
       </strong>
