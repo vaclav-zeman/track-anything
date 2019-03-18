@@ -7,12 +7,17 @@ import { TrackerModel } from '../stores/TrackerStore';
 const Box = styled.button`
   padding: 20px;
   margin: 0 0 20px;
-  height: 165px;
-  width: 165px;
+  height: 155px;
+  width: 155px;
   border-radius: 10px;
   border: none;
   box-shadow: 0 0 35px rgba(0, 0, 0, 0.4);
   background: ${(props: { bgColor?: string }) => props.bgColor};
+
+  @media (min-width: 768px) {
+    width: 170px;
+    height: 170px;
+  }
 `;
 
 const Name = styled.strong`

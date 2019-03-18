@@ -13,7 +13,7 @@ export type IFormValues = {
 };
 
 const Container = styled.main`
-  width: 600px;
+  max-width: 600px;
   padding: 20px;
   margin: 0 auto;
   display: flex;
@@ -27,6 +27,10 @@ const TrackerList = () => {
       {TrackerStore.trackers.map(tracker => (
         <Tracker model={tracker} key={tracker.id} />
       ))}
+
+      {TrackerStore.trackers.length === 0 && (
+        <strong style={{ textAlign: 'center' }}>So empty</strong>
+      )}
     </Container>
   );
 };
