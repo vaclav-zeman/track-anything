@@ -1,5 +1,5 @@
-import React from 'react';
-import { observer } from 'mobx-react';
+import React, { useEffect } from 'react';
+import { Observer } from 'mobx-react';
 import styled from 'styled-components';
 
 import Tracker from '../ui/Tracker';
@@ -7,7 +7,7 @@ import TrackerStore, { TrackInterval } from '../stores/TrackerStore';
 
 export type IFormValues = {
   name: string;
-  limit: number;
+  target: number;
   color: string;
   interval: TrackInterval;
 };
@@ -22,17 +22,29 @@ const Container = styled.main`
 `;
 
 const TrackerList = () => {
+  useEffect(() => {
+    TrackerStore.getTrackers();
+  }, []);
+
   return (
     <Container>
-      {TrackerStore.trackers.map(tracker => (
-        <Tracker model={tracker} key={tracker.id} />
-      ))}
+      <Observer>
+        {() => (
+          <>
+            {TrackerStore.isLoading && `Loading...`}
 
-      {TrackerStore.trackers.length === 0 && (
-        <strong style={{ textAlign: 'center' }}>So empty</strong>
-      )}
+            {TrackerStore.trackers.map(tracker => (
+              <Tracker model={tracker} key={tracker.id} />
+            ))}
+
+            {TrackerStore.trackers.length === 0 && (
+              <strong style={{ textAlign: 'center' }}>So empty</strong>
+            )}
+          </>
+        )}
+      </Observer>
     </Container>
   );
 };
 
-export default observer(TrackerList);
+export default TrackerList;

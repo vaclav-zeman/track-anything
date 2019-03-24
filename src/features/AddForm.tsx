@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Formik, Field, FormikProps } from 'formik';
+import { Formik, FormikProps } from 'formik';
 
 import styled from 'styled-components';
 import TrackerStore, { TrackInterval } from '../stores/TrackerStore';
@@ -9,9 +9,9 @@ import { history } from '../App';
 
 export type IFormValues = {
   name: string;
-  limit: number;
+  target: number;
   color: string;
-  interval: TrackInterval;
+  intervalId: TrackInterval;
 };
 
 const Container = styled.main`
@@ -67,7 +67,7 @@ const AddForm = () => {
   return (
     <Container>
       <Formik
-        initialValues={{ name: '', limit: 0, color: '', interval: TrackInterval.DAY }}
+        initialValues={{ name: '', target: 0, color: '', intervalId: TrackInterval.DAY }}
         onSubmit={(values, { resetForm }) => {
           TrackerStore.addTracker(values);
           history.push('/');
@@ -85,13 +85,13 @@ const AddForm = () => {
               value={values.name}
             />
             <Input
-              name="limit"
+              name="target"
               placeholder="Target"
               type="number"
               onChange={handleChange}
-              value={values.limit}
+              value={values.target}
             />
-            <Input name="interval" onChange={handleChange} value={values.interval} as="select">
+            <Input name="intervalId" onChange={handleChange} value={values.intervalId} as="select">
               <option value={TrackInterval.DAY}>Day</option>
               <option value={TrackInterval.WEEK}>Week</option>
               <option value={TrackInterval.MONTH}>Month</option>

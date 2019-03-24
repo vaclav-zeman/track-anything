@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { observer } from 'mobx-react';
+import { Observer } from 'mobx-react';
 
-import { TrackerModel } from '../stores/TrackerStore';
+import { TrackerModel, TrackInterval } from '../stores/TrackerStore';
 
 const Box = styled.button`
   padding: 20px;
@@ -43,16 +43,27 @@ type IProps = {
   model: TrackerModel;
 };
 
+const intervals = {
+  [TrackInterval.DAY]: 'Day',
+  [TrackInterval.WEEK]: 'Week',
+  [TrackInterval.MONTH]: 'Month',
+  [TrackInterval.NEVER]: 'Never',
+};
+
 const Tracker = ({ model }: IProps) => {
   return (
-    <Box onClick={model.increment} bgColor={model.color}>
-      <Name>{model.name}</Name>
-      <Interval>this {model.interval}</Interval>
-      <Count>
-        {model.currentCount} / {model.limit}
-      </Count>
-    </Box>
+    <Observer>
+      {() => (
+        <Box onClick={model.increment} bgColor={model.color}>
+          <Name>{model.name}</Name>
+          <Interval>this {intervals[model.intervalId]}</Interval>
+          <Count>
+            {model.value} / {model.target}
+          </Count>
+        </Box>
+      )}
+    </Observer>
   );
 };
 
-export default observer(Tracker);
+export default Tracker;

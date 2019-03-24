@@ -1,86 +1,92 @@
-import { observable, action, autorun, toJS } from 'mobx';
+import { observable, action, flow, autorun, toJS } from 'mobx';
 import { IFormValues } from '../features/AddForm';
+import api from '../utils/ApiClient';
 
 export type ITracker = {
+  id: string;
   name: string;
-  limit: number;
+  target: number;
   color: string;
-  interval: TrackInterval;
-  currentCount: number;
+  intervalId: TrackInterval;
+  value: number;
 };
 
 export enum TrackInterval {
-  DAY = 'day',
-  WEEK = 'week',
-  MONTH = 'month',
-  NEVER = 'never',
+  DAY = 1,
+  WEEK = 2,
+  MONTH = 3,
+  NEVER = 4,
 }
 
 export class TrackerModel {
-  name = '';
-  limit = 0;
-  color = '';
-  interval = TrackInterval.DAY;
-  id = '';
-  @observable currentCount = 0;
+  name: string;
+  target: null | number;
+  color: string;
+  intervalId: TrackInterval;
+  id: string;
+  @observable value: number;
 
   constructor(
+    id: string,
     name: string,
-    limit: number,
+    target: number,
     color: string,
-    interval: TrackInterval,
-    currentCount?: number
+    intervalId: TrackInterval,
+    value?: number
   ) {
-    this.id =
-      '_' +
-      Math.random()
-        .toString(36)
-        .substr(2, 9);
+    this.id = id;
     this.name = name;
-    this.limit = limit;
+    this.target = target;
     this.color = color;
-    this.interval = interval;
-
-    if (currentCount) {
-      this.currentCount = currentCount;
-    }
+    this.intervalId = intervalId;
+    this.value = value || 0;
   }
 
   @action.bound
   increment() {
-    if (this.currentCount < this.limit) {
-      this.currentCount += 1;
-    }
+    this.value += 1;
   }
 }
 
 class TrackerStore {
   @observable trackers: Array<TrackerModel> = [];
+  @observable isLoading: boolean = false;
 
-  constructor() {
-    const cached = localStorage.getItem('trackers');
+  // constructor() {
+  //   const cached = localStorage.getItem('trackers');
 
-    if (cached) {
-      this.trackers = JSON.parse(cached).map(
-        (tracker: ITracker) =>
-          new TrackerModel(
-            tracker.name,
-            tracker.limit,
-            tracker.color,
-            tracker.interval,
-            tracker.currentCount
-          )
-      );
-    }
+  //   if (cached) {
+  //     this.trackers = JSON.parse(cached).map(this.createNewModel);
+  //   }
+  // }
 
-    autorun(() => localStorage.setItem('trackers', JSON.stringify(toJS(this.trackers))), {
-      delay: 1000,
-    });
+  createNewModel = (tracker: ITracker): TrackerModel =>
+    new TrackerModel(
+      tracker.id,
+      tracker.name,
+      tracker.target,
+      tracker.color,
+      tracker.intervalId,
+      tracker.value
+    );
+
+  @action.bound
+  async getTrackers() {
+    this.isLoading = true;
+    const userId = 5;
+    const { data } = await api.get('/users/' + userId + '/trackers');
+    
+    this.trackers = data.map(this.createNewModel);
+    this.isLoading = false;
   }
 
-  @action
-  addTracker(values: IFormValues) {
-    this.trackers.push(new TrackerModel(values.name, values.limit, values.color, values.interval));
+  @action.bound
+  async addTracker(values: IFormValues) {
+    const userId = 5;
+    const { data } = await api.post('/users/' + userId + '/trackers', {
+      
+    });
+    console.log(data);
   }
 }
 
