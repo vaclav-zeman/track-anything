@@ -1,4 +1,4 @@
-import { observable, action, flow, autorun, toJS } from 'mobx';
+import { observable, action } from 'mobx';
 import { IFormValues } from '../features/AddForm';
 import api from '../utils/ApiClient';
 
@@ -48,6 +48,9 @@ export class TrackerModel {
   }
 }
 
+const userId = 5;
+
+
 class TrackerStore {
   @observable trackers: Array<TrackerModel> = [];
   @observable isLoading: boolean = false;
@@ -72,8 +75,12 @@ class TrackerStore {
 
   @action.bound
   async getTrackers() {
+    // Is already fetched?
+    if (this.trackers.length) {
+      return;
+    }
+
     this.isLoading = true;
-    const userId = 5;
     const { data } = await api.get('/users/' + userId + '/trackers');
     
     this.trackers = data.map(this.createNewModel);
@@ -82,11 +89,9 @@ class TrackerStore {
 
   @action.bound
   async addTracker(values: IFormValues) {
-    const userId = 5;
-    const { data } = await api.post('/users/' + userId + '/trackers', {
-      
-    });
-    console.log(data);
+    const { data } = await api.post('/users/' + userId + '/trackers', values);
+    
+    this.trackers.push(this.createNewModel(data));
   }
 }
 
