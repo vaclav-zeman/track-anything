@@ -43,8 +43,10 @@ export class TrackerModel {
   }
 
   @action.bound
-  increment() {
+  async increment() {
     this.value += 1;
+
+    await api.post('/users/' + userId + '/trackers/' + this.id + '/record', { value: 1, });
   }
 }
 
@@ -91,7 +93,7 @@ class TrackerStore {
   async addTracker(values: IFormValues) {
     const { data } = await api.post('/users/' + userId + '/trackers', values);
     
-    this.trackers.push(this.createNewModel(data));
+    this.trackers = [this.createNewModel(data), ...this.trackers]
   }
 }
 

@@ -44,19 +44,19 @@ type IProps = {
 };
 
 const intervals = {
-  [TrackInterval.DAY]: 'Day',
-  [TrackInterval.WEEK]: 'Week',
-  [TrackInterval.MONTH]: 'Month',
-  [TrackInterval.NEVER]: 'Never',
+  [TrackInterval.DAY]: 'Today',
+  [TrackInterval.WEEK]: 'This Week',
+  [TrackInterval.MONTH]: 'This Month',
+  [TrackInterval.NEVER]: '',
 };
 
-const Tracker = ({ model }: IProps) => {
+const Tracker = ({ model }: IProps) => {  
   return (
     <Observer>
       {() => (
         <Box onClick={model.increment} bgColor={model.color}>
           <Name>{model.name}</Name>
-          <Interval>this {intervals[model.intervalId]}</Interval>
+          <Interval>{intervals[model.intervalId]}</Interval>
           <Count>
             {model.value} / {model.target}
           </Count>
