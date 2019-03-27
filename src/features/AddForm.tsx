@@ -67,7 +67,7 @@ const AddForm = () => {
   return (
     <Container>
       <Formik
-        initialValues={{ name: '', target: 0, color: '', intervalId: TrackInterval.DAY }}
+        initialValues={{ name: '', target: 1, color: '', intervalId: TrackInterval.DAY }}
         onSubmit={async (values, { resetForm }) => {
           await TrackerStore.addTracker(values);
           history.push('/');

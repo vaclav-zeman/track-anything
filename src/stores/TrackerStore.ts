@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, transaction } from 'mobx';
 import { IFormValues } from '../features/AddForm';
 import api from '../utils/ApiClient';
 
@@ -42,28 +42,28 @@ export class TrackerModel {
     this.value = value || 0;
   }
 
+  get isTargetReached() {
+    if (this.target) {
+      return this.value === this.target;
+    }
+
+    return false;
+  }
+
   @action.bound
   async increment() {
     this.value += 1;
 
-    await api.post('/users/' + userId + '/trackers/' + this.id + '/record', { value: 1, });
+    await api.post('/users/' + userId + '/trackers/' + this.id + '/record', { value: 1 });
   }
 }
 
 const userId = 5;
 
-
 class TrackerStore {
   @observable trackers: Array<TrackerModel> = [];
   @observable isLoading: boolean = false;
-
-  // constructor() {
-  //   const cached = localStorage.getItem('trackers');
-
-  //   if (cached) {
-  //     this.trackers = JSON.parse(cached).map(this.createNewModel);
-  //   }
-  // }
+  @observable stats: any = {};
 
   createNewModel = (tracker: ITracker): TrackerModel =>
     new TrackerModel(
@@ -84,7 +84,7 @@ class TrackerStore {
 
     this.isLoading = true;
     const { data } = await api.get('/users/' + userId + '/trackers');
-    
+
     this.trackers = data.map(this.createNewModel);
     this.isLoading = false;
   }
@@ -92,8 +92,16 @@ class TrackerStore {
   @action.bound
   async addTracker(values: IFormValues) {
     const { data } = await api.post('/users/' + userId + '/trackers', values);
-    
-    this.trackers = [this.createNewModel(data), ...this.trackers]
+
+    this.trackers = [this.createNewModel(data), ...this.trackers];
+  }
+
+  @action.bound
+  async getStats() {
+    this.isLoading = true;
+    const { data } = await api.get('/users/' + userId + '/records');
+    this.stats = data;
+    this.isLoading = false;
   }
 }
 

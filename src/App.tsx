@@ -5,6 +5,7 @@ import { createBrowserHistory } from 'history';
 import './App.css';
 import AddForm from './features/AddForm';
 import TrackerList from './features/TrackerList';
+import Stats from './features/Stats';
 import Header from './ui/Header';
 
 export const history = createBrowserHistory();
@@ -17,6 +18,7 @@ const App = () => {
         <Switch>
           <Route path="/" exact component={TrackerList} />
           <Route path="/add" component={AddForm} />
+          <Route path="/stats" component={Stats} />
         </Switch>
       </>
     </Router>
