@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { Formik, FormikProps } from 'formik';
-
 import styled from 'styled-components';
-import TrackerStore, { TrackInterval } from '../stores/TrackerStore';
+import posed from 'react-pose';
+
+import TrackerStore, { TrackInterval } from '../mobx/TrackerStore';
 import { colorArray } from '../enums';
 import { history } from '../App';
 
@@ -32,7 +33,13 @@ const Input = styled.input`
   width: 100%;
 `;
 
-const ColorBox = styled.label`
+const Label = posed.label({
+  pressable: true,
+  init: { scale: 1 },
+  press: { scale: 0.8 },
+});
+
+const ColorBox = styled(Label)`
   display: inline-block;
   width: 20px;
   height: 20px;
@@ -45,11 +52,18 @@ const ColorBox = styled.label`
   }
 `;
 
-const Color = (props: any) => (
-  <ColorBox style={{ backgroundColor: props.value }}>
-    <input {...props} type="radio" />
-  </ColorBox>
-);
+const Color = (props: any) => {
+  return (
+    <ColorBox
+      htmlFor={props.value}
+      style={{
+        background: 'linear-gradient(to left, ' + props.gradient.join(',') + ')',
+      }}
+    >
+      <input {...props} id={props.value} type="radio" />
+    </ColorBox>
+  );
+};
 
 const Button = styled.button`
   display: block;
@@ -97,13 +111,14 @@ const AddForm = () => {
               <option value={TrackInterval.MONTH}>Month</option>
               <option value={TrackInterval.NEVER}>Never</option>
             </Input>
-            {colorArray.map(color => (
+            {Object.keys(colorArray).map(colorName => (
               <Color
-                key={color}
+                key={colorName}
                 onChange={handleChange}
                 name="color"
-                checked={color === values.color}
-                value={color}
+                checked={colorName === values.color}
+                gradient={(colorArray as any)[colorName]}
+                value={colorName}
               />
             ))}
             <Button type="submit">Create Tracker</Button>

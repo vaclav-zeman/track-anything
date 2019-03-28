@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Observer } from 'mobx-react';
+import posed from 'react-pose';
 
-import { TrackerModel, TrackInterval } from '../stores/TrackerStore';
+import { TrackerModel, TrackInterval } from '../mobx/TrackerStore';
+import { colorArray } from '../enums';
 
 const Box = styled.button`
   padding: 20px;
@@ -11,8 +13,11 @@ const Box = styled.button`
   width: 155px;
   border-radius: 10px;
   border: none;
-  box-shadow: 0 0 35px rgba(0, 0, 0, 0.4);
-  background: ${(props: { bgColor?: string }) => props.bgColor};
+  outline: none;
+  background: linear-gradient(
+    to left top,
+    ${(props: { bgColor: [string, string] }) => props.bgColor && props.bgColor.join(', ')}
+  );
 
   @media (min-width: 768px) {
     width: 170px;
@@ -39,6 +44,11 @@ const Count = styled.span`
   font-weight: 800;
 `;
 
+const PosedCount = posed.div({
+  init: { scale: 1 },
+  press: { scale: 1.3 },
+});
+
 type IProps = {
   model: TrackerModel;
 };
@@ -50,15 +60,26 @@ const intervals = {
   [TrackInterval.NEVER]: '',
 };
 
-const Tracker = ({ model }: IProps) => {  
+const Tracker = ({ model }: IProps) => {
+  const [clicked, setClicked] = useState(false);
+
   return (
     <Observer>
       {() => (
-        <Box onClick={model.increment} bgColor={model.color}>
+        <Box
+          onClick={() => {
+            model.increment();
+            setClicked(true);
+            setTimeout(() => setClicked(false), 100);
+          }}
+          bgColor={(colorArray as any)[model.color]}
+        >
           <Name>{model.name}</Name>
           <Interval>{intervals[model.intervalId]}</Interval>
           <Count>
-            {model.value} / {model.target}
+            <PosedCount pose={clicked ? 'press' : 'init'}>
+              {model.value}/{model.target}
+            </PosedCount>
           </Count>
         </Box>
       )}

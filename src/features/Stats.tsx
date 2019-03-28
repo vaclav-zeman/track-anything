@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Observer } from 'mobx-react';
 import styled from 'styled-components';
 
-import TrackerStore from '../stores/TrackerStore';
+import TrackerStore from '../mobx/TrackerStore';
 
 const Container = styled.main`
   max-width: 600px;
