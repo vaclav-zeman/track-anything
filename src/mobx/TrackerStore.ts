@@ -14,6 +14,25 @@ export type ITracker = {
   value: number;
 };
 
+export type IStatsRecord = {
+  id: string;
+  trackerId: string;
+  color?: string;
+  name: string;
+  value: number;
+  createdAt: Date;
+};
+
+export type ICalendarRecord = {
+  id: string;
+  trackerId: string;
+  color?: string;
+  title: string;
+  value: number;
+  start: Date;
+  end: Date;
+};
+
 export enum TrackInterval {
   DAY = 1,
   WEEK = 2,
@@ -26,7 +45,7 @@ const userId = 5;
 class TrackerStore {
   @observable trackers: Array<TrackerModel> = [];
   @observable isLoading: boolean = false;
-  @observable stats: any = {};
+  @observable stats: { [key: string]: Array<IStatsRecord> } = {};
 
   createNewModel = (tracker: ITracker): TrackerModel =>
     new TrackerModel(
@@ -39,7 +58,7 @@ class TrackerStore {
     );
 
   @computed
-  get calendarStats() {
+  get calendarStats(): ICalendarRecord[] {
     const events = [...Object.entries(this.stats)].reduce((acc: any, [date, records]) => {
       const recArray = Object.values(records).map(record => ({
         id: record.id,
