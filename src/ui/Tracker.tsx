@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { Observer } from 'mobx-react';
 import posed from 'react-pose';
 
-import { TrackerModel, TrackInterval } from '../mobx/TrackerStore';
+import { TrackInterval } from '../mobx/TrackerStore';
+import TrackerModel from '../mobx/TrackerModel';
 import { colorArray } from '../enums';
 
 const Box = styled.button`

@@ -1,6 +1,9 @@
-import { observable, action, transaction } from 'mobx';
+import { observable, action, computed } from 'mobx';
+import moment from 'moment';
+
 import { IFormValues } from '../features/AddForm';
 import api from '../utils/ApiClient';
+import TrackerModel from './TrackerModel';
 
 export type ITracker = {
   id: string;
@@ -16,46 +19,6 @@ export enum TrackInterval {
   WEEK = 2,
   MONTH = 3,
   NEVER = 4,
-}
-
-export class TrackerModel {
-  name: string;
-  target: null | number;
-  color: string;
-  intervalId: TrackInterval;
-  id: string;
-  @observable value: number;
-
-  constructor(
-    id: string,
-    name: string,
-    target: number,
-    color: string,
-    intervalId: TrackInterval,
-    value?: number
-  ) {
-    this.id = id;
-    this.name = name;
-    this.target = target;
-    this.color = color;
-    this.intervalId = intervalId;
-    this.value = value || 0;
-  }
-
-  get isTargetReached() {
-    if (this.target) {
-      return this.value === this.target;
-    }
-
-    return false;
-  }
-
-  @action.bound
-  async increment() {
-    this.value += 1;
-
-    await api.post('/users/' + userId + '/trackers/' + this.id + '/record', { value: 1 });
-  }
 }
 
 const userId = 5;
@@ -74,6 +37,26 @@ class TrackerStore {
       tracker.intervalId,
       tracker.value
     );
+
+  @computed
+  get calendarStats() {
+    const events = [...Object.entries(this.stats)].reduce((acc: any, [date, records]) => {
+      const recArray = Object.values(records).map(record => ({
+        id: record.id,
+        trackerId: record.trackerId,
+        color: record.color,
+        title: record.name,
+        value: record.value,
+        start: moment(record.createdAt).toDate(),
+        end: moment(record.createdAt)
+          .add('60', 'minutes')
+          .toDate(),
+      }));
+      return [...acc, ...recArray];
+    }, []);
+
+    return events;
+  }
 
   @action.bound
   async getTrackers() {
