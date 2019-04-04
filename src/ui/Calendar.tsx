@@ -44,13 +44,13 @@ const EventCount = styled.strong`
 
 const EventComponent = (props: any) => {
   const background = Array.isArray((colorArray as any)[props.event.color])
-    ? (colorArray as any)[props.event.color]
-    : ['gray', 'black'];
+    ? (colorArray as any)[props.event.color][1]
+    : 'gray';
 
   return (
     <Event
       style={{
-        background: `gray linear-gradient(to bottom right, ${background.join(',')})`,
+        background,
       }}
     >
       {props.title} <EventCount>{props.event.value}</EventCount>
