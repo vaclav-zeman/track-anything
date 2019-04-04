@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
+import { colorArray } from '../enums';
+
 const Wrap = styled.header`
   text-align: center;
   padding: 15px 0;
@@ -17,9 +19,12 @@ const StyledLink = styled(Link)`
   ${(props: { primary?: boolean }) =>
     props.primary &&
     css`
-      background: #00b3e6;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(to left bottom, ${colorArray.grape.join(',')});
       color: white;
-      border-radius: 5px;
+      font-weight: bold;
+      border-radius: 30px;
+      padding: 13px 23px;
     `}
 `;
 
@@ -27,7 +32,7 @@ const Header = () => (
   <Wrap>
     <StyledLink to="/">Trackers</StyledLink>
     <StyledLink primary to="/add">
-      Add +
+      Add Tracker
     </StyledLink>
     <StyledLink to="/stats">Stats</StyledLink>
   </Wrap>
